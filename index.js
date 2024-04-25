@@ -87,7 +87,7 @@ async function run() {
     });
 
     //! Get flashSaleCollection products
-    app.get("/api/v1/products", async (req, res) => {
+    app.get("/api/v1/flash-sale", async (req, res) => {
       try {
         const products = await flashSaleCollection.find().toArray();
         res.json(products);
