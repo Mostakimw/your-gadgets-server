@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -31,22 +31,23 @@ async function run() {
     app.get("/api/v1/products", async (req, res) => {
       try {
         // Get query parameters for filtering
-        const { brand, category, minPrice, maxPrice, sortBy, limit } = req.query;
-    
+        const { brand, category, minPrice, maxPrice, sortBy, limit } =
+          req.query;
+
         // Construct filter object based on provided query parameters
         const filter = {};
-    
+
         // Filter products by brand
         if (brand) {
-          filter.brand = brand; 
+          filter.brand = brand;
         }
         // Filter products by category
         if (category) {
-          filter.category = category; 
+          filter.category = category;
         }
         // Filter products by price range
         if (minPrice || maxPrice) {
-          filter.price = {}; 
+          filter.price = {};
           if (minPrice) {
             filter.price.$gte = parseFloat(minPrice);
           }
@@ -54,16 +55,16 @@ async function run() {
             filter.price.$lte = parseFloat(maxPrice);
           }
         }
-    
+
         // Query the database with filtering and sorting
         const query = productsCollection.find(filter);
-        if (sortBy === 'rating') {
-          query.sort({ "rating": -1 }); // Sort by rating in descending order
+        if (sortBy === "rating") {
+          query.sort({ rating: -1 }); // Sort by rating in descending order
         }
         if (limit) {
           query.limit(parseInt(limit)); // Limit the number of products returned
         }
-        
+
         const products = await query.toArray();
         res.json(products);
       } catch (error) {
@@ -101,7 +102,9 @@ async function run() {
     app.get("/api/v1/products/:id", async (req, res) => {
       try {
         const productId = req.params.id;
-        const product = await productsCollection.findOne({ _id: productId });
+        const product = await productsCollection.findOne({
+          _id: new ObjectId(productId),
+        });
         console.log(product);
         if (!product) {
           return res.status(404).json({ error: "Product not found" });
