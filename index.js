@@ -105,7 +105,6 @@ async function run() {
         const product = await productsCollection.findOne({
           _id: new ObjectId(productId),
         });
-        console.log(product);
         if (!product) {
           return res.status(404).json({ error: "Product not found" });
         }
